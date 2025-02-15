@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags: [ v* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: "Setup JDK 17"
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: "Run build"
+        run: |
+          wget -O source.tar.gz 'https://github.com/Docile-Alligator/Infinity-For-Reddit/archive/refs/tags/${{ github.ref_name }}.tar.gz'
+          tar xvf source.tar.gz
+          mv -T Infinity-For-Reddit-* Infinity-For-Reddit
+
+          wget 'https://github.com/TanukiAI/Infinity-keystore/raw/main/Infinity.jks'
+          sed -i Infinity-For-Reddit/app/build.gradle -e '
+          /    buildTypes {/ i \
+              signingConfigs {\
+                  release {\
+                      storeFile file('"'$PWD/Infinity.jks'"')\
+                      storePassword '"'Infinity'"'\
+                      keyAlias '"'Infinity'"'\
+                      keyPassword '"'Infinity'"'\
+                  }\
+              }
+
+          /    buildTypes {/{  n
+          /        release {/ a \
+                      signingConfig signingConfigs.release
+          }
+
+          /    lint {/{  n
+          /        disable '"'MissingTranslation'"'/ a \
+                  baseline = file('"'lint-baseline.xml'"')
+          }'
+
+          sed -i Infinity-For-Reddit/app/src/main/java/ml/docilealligator/infinityforreddit/utils/APIUtils.java -e '
+          s|"NOe2iKrPPzwscA"|"${{ secrets.REDDIT_API_KEY }}"|
+          s|"infinity://localhost"|"http://127.0.0.1"|
+          s|"android:ml.docilealligator.infinityforreddit:" + BuildConfig.VERSION_NAME + " (by /u/Hostilenemy)"|"android:personal-app:0.0.1"|
+          '
+
+          cd Infinity-For-Reddit
+          ./gradlew updateLintBaseline
+          ./gradlew assembleRelease
+          cd ..
+
+          cp Infinity-For-Reddit/app/build/outputs/apk/release/app-release.apk Infinity-${{ github.ref_name }}.apk
+
+      - name: "Create release for tag"
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            Automatic build for ${{ github.ref_name }}
+          files: |
+            Infinity-${{ github.ref_name }}.apk

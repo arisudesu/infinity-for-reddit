@@ -1,0 +1,40 @@
+name: Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 3,15 * * *
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Prepare master"
+        uses: actions/checkout@v4
+
+      - name: "Run check"
+        id: check
+
+        run: |
+          THEIRS=$(curl -s 'https://api.github.com/repos/Docile-Alligator/Infinity-For-Reddit/releases/latest' | jq -r '.tag_name')
+          MY=$(curl -s 'https://api.github.com/repos/${{ github.repository }}/releases/latest' | jq -r '.tag_name')
+
+          echo "My release: $MY, theirs: $THEIRS"
+
+          [ "$THEIRS" = "$MY" ] && exit 0
+
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          git commit --allow-empty -m "Trigger release of $THEIRS"
+          git tag "$THEIRS"
+          git push --atomic origin master "$THEIRS"
+
+          echo "tag=$THEIRS" >> "$GITHUB_OUTPUT"
+
+      - name: "Run build workflow"
+        if: steps.check.outputs.tag
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: build.yml
+          ref: refs/tags/${{ steps.check.outputs.tag }}
