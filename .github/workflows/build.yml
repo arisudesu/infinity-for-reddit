@@ -57,10 +57,13 @@ jobs:
 
           cp Infinity-For-Reddit/app/build/outputs/apk/release/app-release.apk Infinity-${{ github.ref_name }}.apk
 
+      - name: "Get the original release notes"
+        run: |
+          curl -s 'https://api.github.com/repos/Docile-Alligator/Infinity-For-Reddit/releases/tags/${{ github.ref_name }}' | jq -r '.body' > notes.txt
+
       - name: "Create release for tag"
         uses: softprops/action-gh-release@v2
         with:
-          body: |
-            Automatic build for ${{ github.ref_name }}
+          body_path: notes.txt
           files: |
             Infinity-${{ github.ref_name }}.apk
