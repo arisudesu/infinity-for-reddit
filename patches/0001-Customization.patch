@@ -2,17 +2,14 @@ diff --git a/app/build.gradle b/app/build.gradle
 index 81939013..02b7783a 100644
 --- a/app/build.gradle
 +++ b/app/build.gradle
-@@ -8,7 +8,7 @@ plugins {
- android {
+@@ -9,5 +9,5 @@ android {
      compileSdk 36
      defaultConfig {
 -        applicationId "ml.docilealligator.infinityforreddit"
 +        applicationId APP_PACKAGE
          minSdk 21
          targetSdk 35
-         versionCode 217
-@@ -19,9 +19,21 @@ android {
-                 arguments = [eventBusIndex: 'ml.docilealligator.infinityforreddit.EventBusIndex']
+@@ -20,7 +20,19 @@ android {
              }
          }
 +        buildConfigField "String", "API_CLIENT_ID", "\"$API_CLIENT_ID\""
@@ -32,31 +29,25 @@ index 81939013..02b7783a 100644
 +            signingConfig signingConfigs.release
              minifyEnabled false
              proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-         }
 diff --git a/app/src/main/java/ml/docilealligator/infinityforreddit/utils/APIUtils.java b/app/src/main/java/ml/docilealligator/infinityforreddit/utils/APIUtils.java
 index ef20051f..39e768ab 100644
 --- a/app/src/main/java/ml/docilealligator/infinityforreddit/utils/APIUtils.java
 +++ b/app/src/main/java/ml/docilealligator/infinityforreddit/utils/APIUtils.java
-@@ -33,7 +33,7 @@ public class APIUtils {
- 
+@@ -34,5 +34,5 @@ public class APIUtils {
      public static final String CLIENT_ID_KEY = "client_id";
      public static final String CLIENT_SECRET_KEY = "client_secret";
 -    public static final String CLIENT_ID = "NOe2iKrPPzwscA";
 +    public static final String CLIENT_ID = BuildConfig.API_CLIENT_ID;
      public static final String IMGUR_CLIENT_ID = "Client-ID cc671794e0ab397";
      public static final String REDGIFS_CLIENT_ID = "1828d0bcc93-15ac-bde6-0005-d2ecbe8daab3";
-     public static final String REDGIFS_CLIENT_SECRET = "TJBlw7jRXW65NAGgFBtgZHu97WlzRXHYybK81sZ9dLM=";
-@@ -43,7 +43,7 @@ public class APIUtils {
-     public static final String STATE_KEY = "state";
+@@ -44,5 +44,5 @@ public class APIUtils {
      public static final String STATE = "23ro8xlxvzp4asqd";
      public static final String REDIRECT_URI_KEY = "redirect_uri";
 -    public static final String REDIRECT_URI = "infinity://localhost";
 +    public static final String REDIRECT_URI = BuildConfig.API_REDIRECT_URI;
      public static final String DURATION_KEY = "duration";
      public static final String DURATION = "permanent";
-     public static final String SCOPE_KEY = "scope";
-@@ -53,8 +53,8 @@ public class APIUtils {
-     public static final String AUTHORIZATION_KEY = "Authorization";
+@@ -54,6 +54,6 @@ public class APIUtils {
      public static final String AUTHORIZATION_BASE = "bearer ";
      public static final String USER_AGENT_KEY = "User-Agent";
 -    public static final String USER_AGENT = "android:ml.docilealligator.infinityforreddit:" + BuildConfig.VERSION_NAME + " (by /u/Hostilenemy)";
@@ -65,13 +56,11 @@ index ef20051f..39e768ab 100644
 +    public static final String ANONYMOUS_USER_AGENT = BuildConfig.CUSTOM_USER_AGENT != "" ? BuildConfig.CUSTOM_USER_AGENT : "ml.docilealligator.infinityforreddit:" + BuildConfig.VERSION_NAME + " (by /u/Hostilenemy)";
      public static final String USERNAME_KEY = "username";
  
-     public static final String GRANT_TYPE_KEY = "grant_type";
 diff --git a/gradle.properties b/gradle.properties
 index fb78db58..1e2e4eaf 100644
 --- a/gradle.properties
 +++ b/gradle.properties
-@@ -19,3 +19,14 @@ org.gradle.jvmargs=-Xmx2048m
- # This option should only be used with decoupled projects. More details, visit
+@@ -20,2 +20,13 @@ org.gradle.jvmargs=-Xmx2048m
  # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
  # org.gradle.parallel=true
 +
