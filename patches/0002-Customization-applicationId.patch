@@ -1,11 +1,13 @@
 diff --git a/app/build.gradle b/app/build.gradle
-index 74fc6311..193bcef1 100644
+index e7760288..c2dce8e0 100644
 --- a/app/build.gradle
 +++ b/app/build.gradle
-@@ -9,5 +9,5 @@ android {
-     compileSdk 36
+@@ -8,7 +8,7 @@ plugins {
+ android {
+     compileSdk = 36
      defaultConfig {
 -        applicationId "ml.docilealligator.infinityforreddit"
 +        applicationId APP_PACKAGE
          minSdk 21
-         targetSdk 35
+         targetSdk 36
+         versionCode 228
