@@ -40,8 +40,8 @@ jobs:
               -P RELEASE_KEY_ALIAS=dev.arisu.infinityforreddit \
               -P RELEASE_KEY_PSWD="${{ secrets.RELEASE_KEY_PSWD }}" \
               -P API_CLIENT_ID="${{ secrets.REDDIT_API_CLIENT_ID }}" \
-              -P API_REDIRECT_URI=http://127.0.0.1 \
-              -P CUSTOM_USER_AGENT=android:personal-app:0.0.1 \
+              -P API_REDIRECT_URI="${{ secrets.REDDIT_API_REDIRECT_URI || 'http://127.0.0.1' }}" \
+              -P CUSTOM_USER_AGENT="${{ secrets.REDDIT_CUSTOM_USER_AGENT || 'android:personal-app:0.0.1' }}" \
             assembleRelease
           cd ..
 
